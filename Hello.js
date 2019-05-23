@@ -35,6 +35,15 @@ const WithDatasource = (datasource) => (
     : withUsers(datasource)
 )
 
+const withDatasource = ({ children, datasource}) => {
+  console.log('children', children)
+  // return class hoc extends React.Component {
+  //   render() {
+      return <children {...this.props} />
+  //   }
+  // }
+}
+
 const FieldWithUsers = withUsers()(Field)
 const FieldWithList = withValueList({ ref: 'bb2b48d2-4539-4bd4-83e9-6d20bfb98710' })(Field)
 const FieldTest = WithDatasource(valueListdatasource)(Field)
@@ -42,12 +51,16 @@ const FieldTest = WithDatasource(valueListdatasource)(Field)
 const FieldWidget = ({ datasource: { type } }) => 
   (type === 'VALUELIST' ? (<FieldWithList />) : (<FieldWithUsers />))
 
+const MakeFieldWidget = (field) => ({ datasource: { type } }) => 
+  (type === 'VALUELIST' ? (withUsers()(field)) : (withValueList(valueListdatasource)(field)))
+
 
 const Hello = (props) => {
   const { name } = props
 
   const cp = WithDatasource(valueListdatasource)(Field)
 
+  //const cp2 = withDatasource(Field, userListdatasource)
 
   return (<div>
     <h1>Hello {name}!</h1>
@@ -62,7 +75,7 @@ const Hello = (props) => {
     <FieldWidget datasource={userListdatasource} />
 
     <h3>generic wrapper list</h3>
-    <FieldWidget datasource={valueListdatasource} />
+
 
   </div>
   )
