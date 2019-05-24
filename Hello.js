@@ -5,6 +5,8 @@ import 'react-selectize/themes/index.css'
 
 import { withUsers, withValueList, withUsers2, withValueList2 } from './apollo'
 
+import RadioView from './radio'
+
 const Field = (props) => {
   const { valueList, filter } = props
   return (<MultiSelect
@@ -69,17 +71,18 @@ const FieldWithoutDatasourceWithDatasource = compose(
 const valueListdatasource = { type: 'VALUELIST', ref: 'bb2b48d2-4539-4bd4-83e9-6d20bfb98710' }
 const userListdatasource = { type: 'USERLIST' }
 
+
 const WithDatasource = (datasource) => (
   datasource.type === 'VALUELIST'
     ? withValueList(datasource)
     : withUsers(datasource)
 )
 
-const withDatasource = ({ children, datasource}) => {
+const withDatasource = ({ children, datasource }) => {
   console.log('children', children)
   // return class hoc extends React.Component {
   //   render() {
-      return <children {...this.props} />
+  return <children {...this.props} />
   //   }
   // }
 }
@@ -88,47 +91,66 @@ const FieldWithUsers = withUsers()(Field)
 const FieldWithList = withValueList(valueListdatasource)(Field)
 const FieldTest = WithDatasource(valueListdatasource)(Field)
 
-const FieldWidget = ({ datasource: { type } }) => 
+const FieldWidget = ({ datasource: { type } }) =>
   (type === 'VALUELIST' ? (<FieldWithList />) : (<FieldWithUsers />))
 
-const MakeFieldWidget = (field) => ({ datasource: { type } }) => 
+const MakeFieldWidget = (field) => ({ datasource: { type } }) =>
   (type === 'VALUELIST' ? (withUsers()(field)) : (withValueList(valueListdatasource)(field)))
 
+const radioParams = {
+  fieldId: 'blahblah',
+  options: { inline: false },
+  errors: [],
+  fieldData: {},
+  setCurrentFieldData: (value) => {},
+}
 
-const Hello = (props) => {
-  const { name } = props
+class Hello extends React.Component {
 
-  const cp = WithDatasource(valueListdatasource)(Field)
+  render() {
+    const { name } = this.props
 
-  //const cp2 = withDatasource(Field, userListdatasource)
+    const cp = WithDatasource(valueListdatasource)(Field)
 
-  return (<div>
-    <h1>Hello {name}!</h1>
+    //const cp2 = withDatasource(Field, userListdatasource)
 
-    <h3>datasource = users</h3>
-    <FieldWithUsers />
+    radioParams.fieldData = this.state && this.state.fieldData || {}
+    radioParams.setCurrentFieldData = (value) => {
+      this.setState({ fieldData: value })
+      // radioParams.fieldData = value
+      // console.log('data', radioParams)
+    }
 
-    <h3>datasource = liste de valeurs</h3>
-    <FieldWithList />
+    return (<div>
+      <h1>Hello {name}!</h1>
 
-    <h3>widget users</h3>
-    <FieldWidget datasource={userListdatasource} />
+      <h3>datasource = users</h3>
+      <FieldWithUsers />
 
-    <h3>generic wrapper users</h3>
-    <FieldWithDatasource datasource={userListdatasource} />
+      <h3>datasource = liste de valeurs</h3>
+      <FieldWithList />
 
-    <h3>generic wrapper list</h3>
-    <FieldWithDatasource datasource={valueListdatasource} />
+      <h3>widget users</h3>
+      <FieldWidget datasource={userListdatasource} />
 
-    <h3>generic wrapper on single field</h3>
-    <FieldSingleWithDatasource datasource={userListdatasource} />
+      <h3>generic wrapper users</h3>
+      <FieldWithDatasource datasource={userListdatasource} />
 
-  <h3>field without datasource</h3>
-  <FieldWithoutDatasourceWithDatasource />
+      <h3>generic wrapper list</h3>
+      <FieldWithDatasource datasource={valueListdatasource} />
 
+      <h3>generic wrapper on single field</h3>
+      <FieldSingleWithDatasource datasource={userListdatasource} />
 
-  </div>
-  )
+      <h3>field without datasource</h3>
+      <FieldWithoutDatasourceWithDatasource />
+
+      <h3>radio</h3>
+      <RadioView datasource={valueListdatasource} {...radioParams} />
+
+    </div>
+    )
+  }
 };
 
 export default Hello
